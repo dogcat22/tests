@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+    <html>
+        <title>Simple Calculator</title>
+        <head> 
+            <style>
+                button {
+                    background-color: coral;
+                    width: 40px;
+                    height: 40px;
+                }
+                button:hover {
+                    background-color: lightcoral;
+                }
+                button:active {
+                    background-color: red;
+                }
+            </style>
+        </head>
+
+        <body>
+
+             <h1>Simple Calculator</h1>
+
+            <button>1</button>
+            <button>2</button> 
+            <button style =" margin-bottom: 5px;">3</button> 
+            <button style =" margin-left: 5px;">+</button> <button>*</button> <br>
+
+            <button>4</button>
+            <button>5</button>
+            <button style =" margin-bottom: 5px;">6</button> 
+            <button style =" margin-left: 5px;">-</button> <button>/</button> <br>
+
+            <button>7</button>
+            <button>8</button>
+            <button style = " margin-bottom: 5px;">9</button>  <br>
+
+            <button>0</button>
+            <button>.</button>
+            <button>=</button>
+            <button>clear</button>
+            <button>^</button>
+            <button>√</button>
+            <button>(</button>
+            <button>)</button>
+            <div id = "display" style="width: 200px; height: 40px; background-color: lightgray; margin-top: 10px; text-align: right; padding-right: 5px; font-size: 20px;">0</div>
+            
+
+
+            <script>
+
+        //keyboard input
+            document.addEventListener('keydown', (event) => {
+                const key = event.key;
+                const display = document.querySelector('#display');
+                if (key === 'Enter') {
+                    try {
+                        if (display.textContent.includes('^')) {
+                            display.textContent = display.textContent.replaceAll('^', ' ** ');
+                            display.textContent = eval(display.textContent);
+                        } else if (display.textContent.includes('√')) {
+                            display.textContent = display.textContent.replaceAll('√', ' Math.sqrt');
+                            display.textContent = eval(display.textContent);
+                        } else {
+                            display.textContent = eval(display.textContent);
+                        }
+                    } catch (e) {
+                        display.textContent = 'Error';
+                    }
+                } else if (key === 'Backspace') {
+                    display.textContent = '0';
+                 }
+                  else {
+                        display.textContent += key;
+                    }
+                //button click for visual feedback
+            });
+                 document.querySelectorAll('button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const display = document.querySelector('#display');
+                        const value = button.textContent;
+
+                        if (value === '=') {
+                            try {
+                                if (display.textContent.includes('^')) {
+                                display.textContent = display.textContent.replaceAll('^', ' ** ');
+                                display.textContent = eval(display.textContent);
+                                } else if (display.textContent.includes('√')) {
+                                display.textContent = display.textContent.replaceAll('√', ' Math.sqrt');
+                                display.textContent = eval(display.textContent);
+                                } else {
+                                display.textContent = eval(display.textContent);
+                                }
+                            } catch (e) {
+                                display.textContent = 'Error';
+                            }
+                        } else if (value === 'clear') {
+                            display.textContent = '0';
+                        } else {
+                            if (display.textContent === '0' || display.textContent === 'Error') {
+                                display.textContent = value;
+                            } else {
+                                display.textContent += value;
+                            }
+                        }
+
+                    });
+                });
+
+
+            </script>
+        </body>
+    </html>
