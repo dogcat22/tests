@@ -18,7 +18,9 @@
         </head>
 
         <body>
-
+            <a href="new.html">
+                <button id="rps" style="background-color: coral; width: 200px; height: 40px;">Play Rock Paper Scissors</button>
+            </a>            
              <h1>Simple Calculator</h1>
 
             <button>1</button>
@@ -43,12 +45,13 @@
             <button>√</button>
             <button>(</button>
             <button>)</button>
+            <button>ans</button>
             <div id = "display" style="width: 200px; height: 40px; background-color: lightgray; margin-top: 10px; text-align: right; padding-right: 5px; font-size: 20px;">0</div>
             
 
 
             <script>
-
+                lastAns = 0;
         //keyboard input
             document.addEventListener('keydown', (event) => {
                 const key = event.key;
@@ -59,7 +62,8 @@
                             display.textContent = display.textContent.replaceAll('^', ' ** ');
                             display.textContent = eval(display.textContent);
                         } else if (display.textContent.includes('√')) {
-                            display.textContent = display.textContent.replaceAll('√', ' Math.sqrt');
+                            after = display.textContent.replace()
+                            display.textContent = display.textContent.replaceAll('√', ' Math.sqrt(');
                             display.textContent = eval(display.textContent);
                         } else {
                             display.textContent = eval(display.textContent);
@@ -77,24 +81,38 @@
             });
                  document.querySelectorAll('button').forEach(button => {
                     button.addEventListener('click', () => {
+
+                        if (button.id === 'rps') {
+                            return; // Skip the rock paper scissors button
+                        }
+
                         const display = document.querySelector('#display');
                         const value = button.textContent;
 
+                        if (button.textContent === 'ans') {
+                            display.textContent = lastAns;
+                            return;
+                        }
+                        
+
                         if (value === '=') {
+
                             try {
                                 if (display.textContent.includes('^')) {
                                 display.textContent = display.textContent.replaceAll('^', ' ** ');
                                 display.textContent = eval(display.textContent);
                                 } else if (display.textContent.includes('√')) {
-                                display.textContent = display.textContent.replaceAll('√', ' Math.sqrt');
-                                display.textContent = eval(display.textContent);
+                                display.textContent = display.textContent.replaceAll('√', ' Math.sqrt(');
+                                display.textContent = eval(display.textContent+')');
                                 } else {
                                 display.textContent = eval(display.textContent);
                                 }
+                            lastAns = display.textContent;
                             } catch (e) {
                                 display.textContent = 'Error';
                             }
-                        } else if (value === 'clear') {
+                        } else if (value === 'clear') { 
+                            lastAns = display.textContent;
                             display.textContent = '0';
                         } else {
                             if (display.textContent === '0' || display.textContent === 'Error') {
@@ -103,7 +121,6 @@
                                 display.textContent += value;
                             }
                         }
-
                     });
                 });
 

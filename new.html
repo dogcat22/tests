@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Rock Paper Scissors</title>
+    </head>
+
+    <body>
+        <h1>Rock Paper Scissors</h1>
+        <p>Try to win against the computer!</p>
+        <a href="website.html">Go back to Home Page</a>
+
+
+
+        <button id="rock">Rock</button>
+
+        <button id="paper">Paper</button>
+
+        <button id="scissors">Scissors</button>
+
+        <h2 id="result"></h2>
+        <h2 id="counter">Wins: 0 Losses: 0</h2>
+
+        <script>
+            let wins = 0;
+            let losses = 0;
+
+            document.getElementById('rock').addEventListener('click', () => { play('rock');});
+            document.getElementById('paper').addEventListener('click', () => { play('paper');});
+            document.getElementById('scissors').addEventListener('click', () => { play('scissors');});
+
+            function play(playerChoice) {
+                const choices = ['rock', 'paper', 'scissors'];
+                const computerChoice = choices[Math.floor(Math.random() * 3)];
+                const resultElement = document.getElementById('result');
+                const counterElement = document.getElementById('counter');
+
+                if (playerChoice === computerChoice) {
+                    resultElement.textContent = `It's a tie! Computer also chose ${computerChoice}.`;
+                } else if (
+                    (playerChoice === 'rock' && computerChoice === 'scissors') ||
+                    (playerChoice === 'paper' && computerChoice === 'rock') ||
+                    (playerChoice === 'scissors' && computerChoice === 'paper')
+                ) {
+                    wins = wins + 1;
+                    resultElement.textContent = `You win! Computer chose ${computerChoice}.`;
+                } else {
+                    losses = losses + 1;
+                    resultElement.textContent = `You lose! Computer chose ${computerChoice}.`;
+                }
+
+                counterElement.textContent = `Wins: ${wins} Losses: ${losses}`;
+                
+            }
+        </script>
+        
+    </body>
+</html>
