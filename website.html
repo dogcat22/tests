@@ -62,8 +62,7 @@
                             display.textContent = display.textContent.replaceAll('^', ' ** ');
                             display.textContent = eval(display.textContent);
                         } else if (display.textContent.includes('√')) {
-                            after = display.textContent.replace()
-                            display.textContent = display.textContent.replaceAll('√', ' Math.sqrt(');
+                            display.textContent = display.textContent.replace(/√(\d+)/g, 'Math.sqrt($1)');
                             display.textContent = eval(display.textContent);
                         } else {
                             display.textContent = eval(display.textContent);
@@ -90,7 +89,7 @@
                         const value = button.textContent;
 
                         if (button.textContent === 'ans') {
-                            display.textContent = lastAns;
+                            display.textContent = display.textContent + lastAns;
                             return;
                         }
                         
@@ -102,12 +101,13 @@
                                 display.textContent = display.textContent.replaceAll('^', ' ** ');
                                 display.textContent = eval(display.textContent);
                                 } else if (display.textContent.includes('√')) {
-                                display.textContent = display.textContent.replaceAll('√', ' Math.sqrt(');
-                                display.textContent = eval(display.textContent+')');
+                                display.textContent = display.textContent.replace(/√(\d+)/g, 'Math.sqrt($1)');
+                                display.textContent = eval(display.textContent);
                                 } else {
                                 display.textContent = eval(display.textContent);
                                 }
                             lastAns = display.textContent;
+                            
                             } catch (e) {
                                 display.textContent = 'Error';
                             }

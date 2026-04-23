@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple Simulation</title>
+    </head>
+
+    <body>
+<a href="website.html">
+            <button id="back" style="background-color: coral; width: 100px; height: 40px;">Back to Calculator</button>
+        </a>
+
+        <a href="morus-code.html">
+            <button id="morus" style="background-color: lightblue; width: 100px; height: 40px;">Morus Code</button>
+        </a>
+        <h1>Simple Simulation</h1>
+        <p>This is a simple simulation of sand falling. Click the window below to drop sand and watch it fall!</p>
+        
+
+
+        <canvas id="sandCanvas" width="400" height="400" style="border:3px solid black;"></canvas>
+       
+       <script>
+            const canvas = document.getElementById('sandCanvas');
+            const ctx = canvas.getContext('2d');
+            const sandParticles = [];
+
+            canvas.addEventListener('click', (event) => {
+                const rect = canvas.getBoundingClientRect();
+                let x = event.clientX - rect.left;
+                x = Math.floor(x / 5) * 5; // snap to grid
+                const y = event.clientY - rect.top;
+                sandParticles.push({x: x, y: y, vy: 0});
+            });
+
+            // Check if a particle is supported from below (left, center, or right)
+            function hasSupport(particle) {
+                const checkPositions = [
+                    {x: particle.x - 5, y: particle.y - 5},      // left-bottom
+                    {x: particle.x, y: particle.y - 5},          // center-bottom
+                    {x: particle.x + 5, y: particle.y - 5}       // right-bottom
+                ];
+
+                for (let check of checkPositions) {
+                    for (let other of sandParticles) {
+                        if (other !== particle && 
+                            check.x >= other.x && check.x < other.x + 5 && check.y >= other.y && check.y < other.y + 5) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            //cellular automata simulation
+            function update() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let particle of sandParticles) {
+                    particle.vy += 0.1; // gravity
+                    particle.y += particle.vy;
+                    
+                    // collision detection with the floor
+                    if (particle.y > canvas.height - 5) {
+                        particle.y = canvas.height - 5;
+                        particle.vy = 0;
+                    }
+
+                    // simple collision detection with other particles
+                    let collided = false;
+                    for (let other of sandParticles) {
+                        if (other !== particle && 
+                            particle.x < other.x + 5 && particle.x + 5 > other.x && 
+                            particle.y < other.y + 5 && particle.y + 5 > other.y) {
+                            particle.y = other.y - 5; // stack on top of the other particle
+                            particle.vy = 0;
+                            collided = true;
+                            break;
+                        }   
+                    }
+
+                    // Check if particle is supported; if not, make it fall off randomly
+                    if (collided && !hasSupport(particle)) {
+                        // Randomly fall left or right
+                        particle.x += Math.random() < 0.5 ? -5 : 5;
+                        particle.vy = 0.5; // slightly increase velocity to fall
+                    }
+
+                    ctx.fillStyle = 'sandybrown';
+                    ctx.fillRect(particle.x, particle.y, 5, 5);
+                }
+                requestAnimationFrame(update);
+            }
+         
+
+            update();
+
+        </script>
+    </body>
+</html>

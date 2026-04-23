@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Morse Code</title>
+    </head>
+
+    <body>
+        <a href="website.html">
+            <button id="back" style="background-color: coral; width: 100px; height: 40px;">Back to Calculator</button>
+        </a>
+        <h1>Morse Code</h1>
+        <button onclick="
+    document.querySelectorAll('h1, textarea, #decoded').forEach(el => el.style.display = 'none');
+        ">Hide</button>
+        <button onclick="    document.querySelectorAll('h1, textarea, #decoded').forEach(el => el.style.display = 'block');">Show</button>
+        <script>
+
+            const morseCode = {
+                'A': '.-',
+                'B': '-...',
+                'C': '-.-.',
+                'D': '-..',
+                'E': '.',
+                'F': '..-.',
+                'G': '--.',
+                'H': '....',
+                'I': '..',
+                'J': '.---',
+                'K': '-.-',
+                'L': '.-..',
+                'M': '--',
+                'N': '-.',
+                'O': '---',
+                'P': '.--.',
+                'Q': '--.-',
+                'R': '.-.',
+                'S': '...',
+                'T': '-',
+                'U': '..-',
+                'V': '...-',
+                'W': '.--',
+                'X': '-..-',
+                'Y': '-.--',
+                'Z': '--..',
+                ' ': '/'
+                
+            };
+
+
+            function encodeMorse(text) {
+                return text.toUpperCase().split('').map(char => morseCode[char] || char).join(' '); // add space between Morse characters
+                document.getElementById('encoded').textContent = encodeMorse(document.getElementById('input').value);
+            }
+
+            function decodeMorse(encodedText) {
+                const reverseCipher = Object.fromEntries(Object.entries(morseCode).map(([k, v]) => [v, k]));
+                return encodedText.split(' ').map(char => reverseCipher[char] || char).join('');
+                document.getElementById('decoded').textContent = decodeMorse(document.getElementById('encoded').textContent);
+            }
+        </script>
+        <textarea id="input" placeholder="Enter text to encode"></textarea>
+        <button onclick="document.getElementById('encoded').textContent = encodeMorse(document.getElementById('input').value)">Encode</button>
+        <p>Encoded Morse: <span id="encoded"></span> </p>
+        <button onclick="document.getElementById('decoded').textContent = decodeMorse(document.getElementById('encoded').textContent)">Decode</button>
+        <p>Decoded Text: <span id="decoded"></span></p>
+    </body>
