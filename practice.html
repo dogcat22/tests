@@ -20,6 +20,8 @@
         <canvas id="sandCanvas" width="400" height="400" style="border:3px solid black;"></canvas>
        
        <script>
+
+
             const canvas = document.getElementById('sandCanvas');
             const ctx = canvas.getContext('2d');
             const sandParticles = [];
@@ -29,7 +31,13 @@
                 let x = event.clientX - rect.left;
                 x = Math.floor(x / 5) * 5; // snap to grid
                 const y = event.clientY - rect.top;
-                sandParticles.push({x: x, y: y, vy: 0});
+                if (sandParticles.some(p => p.x === x && p.y === y)) {    //if there is a sand particle in a position that is clicked, delete it
+                    sandParticles.splice(sandParticles.indexOf(other), 1);
+                    
+                } else { 
+                   sandParticles.push({x: x, y: y, vy: 0});
+
+                }
             });
 
             // Check if a particle is supported from below (left, center, or right)
@@ -43,11 +51,12 @@
                 for (let check of checkPositions) {
                     for (let other of sandParticles) {
                         if (other !== particle && 
-                            check.x >= other.x && check.x < other.x + 5 && check.y >= other.y && check.y < other.y + 5) {
-                            return true;
+                            check.x >= other.x && check.x < other.x + 5 && 
+                            check.y >= other.y && check.y < other.y + 5) {
+                        return true;
                         }
                     }
-                }
+            }
                 return false;
             }
 
@@ -55,6 +64,7 @@
             function update() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 for (let particle of sandParticles) {
+                    if (particle.vy > 5) particle.vy = 5; // terminal velocity
                     particle.vy += 0.1; // gravity
                     particle.y += particle.vy;
                     
@@ -79,17 +89,32 @@
 
                     // Check if particle is supported; if not, make it fall off randomly
                     if (collided && !hasSupport(particle)) {
-                        // Randomly fall left or right
-                        particle.x += Math.random() < 0.5 ? -5 : 5;
-                        particle.vy = 0.5; // slightly increase velocity to fall
+                       //If the cell below is occupied, check the cells below-left and below-right
+                        const leftSupport = sandParticles.some(other => 
+                            other !== particle && 
+                            other.x === particle.x - 5 && 
+                            other.y === particle.y + 5
+                        );
+                        const rightSupport = sandParticles.some(other => 
+                            other !== particle && 
+                            other.x === particle.x + 5 && 
+                            other.y === particle.y + 5
+                        );
+
+                        if (!leftSupport && Math.random() < 0.5) {
+                            particle.x -= 5; // move left
+                        } else if (!rightSupport) {
+                            particle.x += 5; // move right
+                        }
+                       
                     }
+
 
                     ctx.fillStyle = 'sandybrown';
                     ctx.fillRect(particle.x, particle.y, 5, 5);
                 }
                 requestAnimationFrame(update);
             }
-         
 
             update();
 
