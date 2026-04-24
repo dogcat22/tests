@@ -19,39 +19,39 @@
         <canvas id="sandCanvas" width="400" height="400" style="border:3px solid black;"></canvas>
        
        <script>
+       let particleType = 'sand'; // default particle type
         let numberOfParticles = 1; // default number of particles to add per click
         addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 // Clear all sand particles
-                sandParticles.length = 0;
+                particles.length = 0;
             }
             if (event.key === '1') {
                 numberOfParticles = parseInt(prompt("Enter the number of particles to add per click:"));
             }
-             if (event.key === '2') {
-                numberOfParticles = 1; // reset to default
+             if (event.key === '3') {
+                particleType = 'blueSand';
+            }
+            if (event.key === '2') {
+                particleType = 'sand';
             }
         });
 
             const canvas = document.getElementById('sandCanvas');
             const ctx = canvas.getContext('2d');
-            const sandParticles = [];
+            const particles = [];
 
-            canvas.addEventListener('mousedown', (event) => {
-    
-            
-                for (let i = 0; i < numberOfParticles; i++) {
-                    const rect = canvas.getBoundingClientRect();
-                    let x = event.clientX - rect.left;
-                    x = Math.floor(x / 5) * 5; // snap to grid
-                    const y = event.clientY - rect.top;
-                     sandParticles.push({x: x, y: y, vy: 0});
-           
-             
-    
-        }
+canvas.addEventListener('mousedown', (event) => {
+                                for (let i = 0; i < numberOfParticles; i++) {
+                                    const rect = canvas.getBoundingClientRect();
+                                    let x = event.clientX - rect.left;
+                                    x = Math.floor(x / 5) * 5; // snap to grid
+                                    const y = event.clientY - rect.top;
+                                    particles.push({x: x, y: y, vy: 0, type: particleType}); // add new particle with current type
+                                }
+                            });
                 
-            });
+            
             canvas.addEventListener('contextmenu', (event) => {
                 event.preventDefault();
                 const rect = canvas.getBoundingClientRect();
@@ -59,10 +59,10 @@
                 x = Math.floor(x / 5) * 5; // snap to grid
                 const y = event.clientY - rect.top;
                 // Remove particle at clicked position                    
-                for (let i = sandParticles.length - 1; i >= 0; i--) {
-                    const particle = sandParticles[i];
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const particle = particles[i];
                     if (x >= particle.x && x < particle.x + 5 && y >= particle.y && y < particle.y + 5) {
-                        sandParticles.splice(i, 1);
+                        particles.splice(i, 1);
                         break;
                     }
                 
@@ -78,7 +78,7 @@
                 ];
 
                 for (let check of checkPositions) {
-                    for (let other of sandParticles) {
+                    for (let other of particles) {
                         if (other !== particle && 
                             check.x >= other.x && check.x < other.x + 5 && 
                             check.y >= other.y && check.y < other.y + 5) {
@@ -92,8 +92,8 @@
             //cellular automata simulation
             function update() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let particle of sandParticles) {
-                    if (particle.vy > 5) particle.vy = 4; // terminal velocity
+                for (let particle of particles) {
+                    if (particle.vy > 5) particle.vy = 3; // terminal velocity
                     particle.vy += 0.1; // gravity
                     particle.y += particle.vy;
                     
@@ -105,28 +105,27 @@
 
                     // simple collision detection with other particles
                     let collided = false;
-                    for (let other of sandParticles) {
-                        if (other !== particle && 
-                            particle.x < other.x + 5 && particle.x + 5 > other.x && 
+                    for (let other of particles) {
+                        if (other !== particle &&
+                            particle.x < other.x + 5 && particle.x + 5 > other.x &&
                             particle.y < other.y + 5 && particle.y + 5 > other.y) {
-                            particle.y = other.y - 5; // stack on top of the other particle
-                            particle.vy = 0;
-                            collided = true;
+                                particle.y = other.y - 5; // sand stacks on top of sand
+                                particle.vy = 0;
+                                collided = true;
+                            
                             break;
-                        }   
+                        }
                     }
-
-                    // Check if particle is supported; if not, make it fall off randomly
-                    if (collided && !hasSupport(particle)) {
+                    if (collided && particle.type === 'sand' && !hasSupport(particle)) {
                        //If the cell below is occupied, check the cells below-left  below-right
-                        const leftSupport = sandParticles.some(other => 
-                            other !== particle && 
-                            other.x === particle.x - 5 && 
+                        const leftSupport = particles.some(other =>
+                            other !== particle &&
+                            other.x === particle.x - 5 &&
                             other.y === particle.y + 5
                         );
-                        const rightSupport = sandParticles.some(other => 
-                            other !== particle && 
-                            other.x === particle.x + 5 && 
+                        const rightSupport = particles.some(other =>
+                            other !== particle &&
+                            other.x === particle.x + 5 &&
                             other.y === particle.y + 5
                         );
 
@@ -135,11 +134,33 @@
                         } else if (leftSupport && !rightSupport && Math.random() < 0.5) {
                             particle.x += 5; // move right
                         }
-                       
+
                     }
+                    if (collided && particle.type === 'blueSand') {
+                        // blueSand flows around particles
+                        const leftSupport = particles.some(other =>
+                            other !== particle &&
+                            other.x === particle.x - 5 &&
+                            other.y === particle.y + 5
+                        );
+                        const rightSupport = particles.some(other =>
+                            other !== particle &&
+                            other.x === particle.x + 5 &&
+                            other.y === particle.y + 5
+                        );
 
-
-                    ctx.fillStyle = 'sandybrown';
+                        if (!leftSupport && Math.random() < 0.5) {
+                            particle.x -= 5; // move left
+                        } else if (leftSupport && !rightSupport && Math.random() < 0.5) {
+                            particle.x += 5; // move right
+                        }
+                    }
+                    if (particle.type === 'sand') {
+                        ctx.fillStyle = 'sandybrown';
+                    } 
+                     if (particle.type === 'blueSand') {
+                        ctx.fillStyle = 'lightblue';
+                    }
                     ctx.fillRect(particle.x, particle.y, 5, 5);
                 }
                 requestAnimationFrame(update);
