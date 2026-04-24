@@ -15,8 +15,9 @@
                 justify-content: center;
             }
             .video-player {
-                width: 800%;
-                max-width: 8000px;
+                width: 80%;
+                height: auto;
+                max-width: 500px;
                 border: 2px solid #ccc;
                 border-radius: 8px;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -25,17 +26,14 @@
                 margin-bottom: 20px;
             }
             .background {
+                transform: scale(1.5);
                 position: absolute;
                 top: 0;
                 left: 0;
-                width: 90%;
-                height: 90%;
-                background-position: center;
+                width: 80%;
+                height: 80%;
+                background-color: #261c68;
                 z-index: -1;
-                opacity: 0.5;
-                background-color: #112b6d;
-                margin: 40px;
-                border-radius: 20px;
             }
         </style>
     </head>
@@ -50,6 +48,20 @@
         <video id="video-player" controls>
             <source src=".video-upload" type="video/mp4">
             Your browser does not support the video tag.
+            <source src=".video-upload" type="video/webm">
+             Your browser does not support the video tag.
+             <source src=".video-upload" type="video/mov">
+             Your browser does not support the video tag.
+             <source src=".video-upload" type="video/avi">
+             Your browser does not support the video tag.
+             <source src=".video-upload" type="video/mkv">
+             Your browser does not support the video tag.
+             <source src=".video-upload" type="video/flv">
+             Your browser does not support the video tag.
+             <source src=".video-upload" type="video/wav">
+             Your browser does not support the video tag.
+             <source src=".video-upload" type="video/aac">
+             Your browser does not support the video tag.
         </video>
 
         <script>
