@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Video Player</title>
+        <style>
+            body {
+                height: 100vh;
+                margin: 0;
+                background-color: #f0f0f0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            .video-player {
+                width: 800%;
+                max-width: 8000px;
+                border: 2px solid #ccc;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            .video-upload {
+                margin-bottom: 20px;
+            }
+            .background {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 90%;
+                height: 90%;
+                background-position: center;
+                z-index: -1;
+                opacity: 0.5;
+                background-color: #112b6d;
+                margin: 40px;
+                border-radius: 20px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="Background" class="background"></div>
+        <form>
+            <label for="video-upload">Upload a video:</label>
+            <input id="video-upload" type="file" accept="video/*">
+        </form>
+     <br>
+        <video id="video-player" controls>
+            <source src=".video-upload" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <script>
+            const videoUpload = document.getElementById('video-upload');
+            const videoPlayer = document.getElementById('video-player');
+
+            videoUpload.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const url = URL.createObjectURL(file);
+                    videoPlayer.src = url;
+                    videoPlayer.load();
+                    videoPlayer.play();
+                }
+            });
+        </script>
+
+    </body> 
+
+</html>
