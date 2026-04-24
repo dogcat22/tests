@@ -13,31 +13,60 @@
             <button id="morus" style="background-color: lightblue; width: 100px; height: 40px;">Morus Code</button>
         </a>
         <h1>Simple Simulation</h1>
-        <p>This is a simple simulation of sand falling. Click the window below to drop sand and watch it fall!</p>
-        
+        <p>Click to add sand particles. Right-click to remove them. Press 'Escape' to clear all particles. Press '1' to set the number of particles added per click.</p>        
 
 
         <canvas id="sandCanvas" width="400" height="400" style="border:3px solid black;"></canvas>
        
        <script>
-
+        let numberOfParticles = 1; // default number of particles to add per click
+        addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                // Clear all sand particles
+                sandParticles.length = 0;
+            }
+            if (event.key === '1') {
+                numberOfParticles = parseInt(prompt("Enter the number of particles to add per click:"));
+            }
+             if (event.key === '2') {
+                numberOfParticles = 1; // reset to default
+            }
+        });
 
             const canvas = document.getElementById('sandCanvas');
             const ctx = canvas.getContext('2d');
             const sandParticles = [];
 
-            canvas.addEventListener('click', (event) => {
+            canvas.addEventListener('mousedown', (event) => {
+    
+            
+                for (let i = 0; i < numberOfParticles; i++) {
+                    const rect = canvas.getBoundingClientRect();
+                    let x = event.clientX - rect.left;
+                    x = Math.floor(x / 5) * 5; // snap to grid
+                    const y = event.clientY - rect.top;
+                     sandParticles.push({x: x, y: y, vy: 0});
+           
+             
+    
+        }
+                
+            });
+            canvas.addEventListener('contextmenu', (event) => {
+                event.preventDefault();
                 const rect = canvas.getBoundingClientRect();
                 let x = event.clientX - rect.left;
                 x = Math.floor(x / 5) * 5; // snap to grid
                 const y = event.clientY - rect.top;
-                if (sandParticles.some(p => p.x === x && p.y === y)) {    //if there is a sand particle in a position that is clicked, delete it
-                    sandParticles.splice(sandParticles.indexOf(other), 1);
-                    
-                } else { 
-                   sandParticles.push({x: x, y: y, vy: 0});
-
-                }
+                // Remove particle at clicked position                    
+                for (let i = sandParticles.length - 1; i >= 0; i--) {
+                    const particle = sandParticles[i];
+                    if (x >= particle.x && x < particle.x + 5 && y >= particle.y && y < particle.y + 5) {
+                        sandParticles.splice(i, 1);
+                        break;
+                    }
+                
+            }
             });
 
             // Check if a particle is supported from below (left, center, or right)
@@ -64,7 +93,7 @@
             function update() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 for (let particle of sandParticles) {
-                    if (particle.vy > 5) particle.vy = 5; // terminal velocity
+                    if (particle.vy > 5) particle.vy = 4; // terminal velocity
                     particle.vy += 0.1; // gravity
                     particle.y += particle.vy;
                     
@@ -89,7 +118,7 @@
 
                     // Check if particle is supported; if not, make it fall off randomly
                     if (collided && !hasSupport(particle)) {
-                       //If the cell below is occupied, check the cells below-left and below-right
+                       //If the cell below is occupied, check the cells below-left  below-right
                         const leftSupport = sandParticles.some(other => 
                             other !== particle && 
                             other.x === particle.x - 5 && 
@@ -103,7 +132,7 @@
 
                         if (!leftSupport && Math.random() < 0.5) {
                             particle.x -= 5; // move left
-                        } else if (!rightSupport) {
+                        } else if (leftSupport && !rightSupport && Math.random() < 0.5) {
                             particle.x += 5; // move right
                         }
                        
