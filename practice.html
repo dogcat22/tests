@@ -1,7 +1,45 @@
 <!DOCTYPE html>
 <html>
+
+
     <head>
+        <meta charset="UTF-8">
         <title>Simple Simulation</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+            }
+            h1 {
+                margin-bottom: 10px;
+            }
+            p {
+                margin-top: 0;
+                margin-bottom: 20px;
+            }
+            #sandCanvas {
+                border: 3px solid black;
+            }
+            .background {
+                transform: scale(1.5);
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 80%;
+                height: 80%;
+                background-color: #261c68;
+                z-index: -1;
+            }
+            #back, #morus, #video {
+                margin: 5px;
+            }
+            
+        </style>
     </head>
 
     <body>
@@ -11,6 +49,9 @@
 
         <a href="morus-code.html">
             <button id="morus" style="background-color: lightblue; width: 100px; height: 40px;">Morus Code</button>
+        </a>
+        <a href="video-player.html">
+            <button id="video" style="background-color: lightgreen; width: 100px; height: 40px;">Video Player</button>
         </a>
         <h1>Simple Simulation</h1>
         <p>Click to add sand particles. Right-click to remove them. Press 'Escape' to clear all particles. Press '1' to set the number of particles added per click.</p>        
@@ -30,7 +71,7 @@
                 numberOfParticles = parseInt(prompt("Enter the number of particles to add per click:"));
             }
              if (event.key === '3') {
-                particleType = 'blueSand';
+                particleType = 'water';
             }
             if (event.key === '2') {
                 particleType = 'sand';
@@ -71,26 +112,6 @@ canvas.addEventListener('mousedown', (event) => {
             }
             });
 
-            // Check if a particle is supported from below (left, center, or right)
-            function hasSupport(particle) {
-                const checkPositions = [
-                    {x: particle.x - 5, y: particle.y - 5},      // left-bottom
-                    {x: particle.x, y: particle.y - 5},          // center-bottom
-                    {x: particle.x + 5, y: particle.y - 5}       // right-bottom
-                ];
-
-                for (let check of checkPositions) {
-                    for (let other of particles) {
-                        if (other !== particle && 
-                            check.x >= other.x && check.x < other.x + 5 && 
-                            check.y >= other.y && check.y < other.y + 5) {
-                        return true;
-                        }
-                    }
-            }
-                return false;
-            }
-
             //cellular automata simulation
             function update() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -118,7 +139,7 @@ canvas.addEventListener('mousedown', (event) => {
                             break;
                         }
                     }
-                    if (collided && particle.type === 'sand' && !hasSupport(particle)) {
+                    if (collided && particle.type === 'sand') {
                        //If the cell below is occupied, check the cells below-left  below-right
                         const leftSupport = particles.some(other =>
                             other !== particle &&
@@ -133,13 +154,15 @@ canvas.addEventListener('mousedown', (event) => {
 
                         if (!leftSupport && Math.random() < 0.5) {
                             particle.x -= 5; // move left
-                        } else if (leftSupport && !rightSupport && Math.random() < 0.5) {
+                        } else if (!rightSupport && Math.random() < 0.5) {
                             particle.x += 5; // move right
                         }
 
                     }
-                    if (collided && particle.type === 'blueSand') {
-                        // blueSand flows around particles
+                    
+                       if (particle.type === 'water') {
+                      if (collided) {
+                        // If the cell below is occupied, try to move left or right
                         const leftSupport = particles.some(other =>
                             other !== particle &&
                             other.x === particle.x - 5 &&
@@ -153,15 +176,16 @@ canvas.addEventListener('mousedown', (event) => {
 
                         if (!leftSupport && Math.random() < 0.5) {
                             particle.x -= 5; // move left
-                        } else if (leftSupport && !rightSupport && Math.random() < 0.5) {
+                        } else if (!rightSupport && Math.random() < 0.5) {
                             particle.x += 5; // move right
                         }
+                      }
                     }
+                    
                     if (particle.type === 'sand') {
                         ctx.fillStyle = 'sandybrown';
-                    } 
-                     if (particle.type === 'blueSand') {
-                        ctx.fillStyle = 'lightblue';
+                    } else if (particle.type === 'water') {
+                        ctx.fillStyle = 'red';
                     }
                     ctx.fillRect(particle.x, particle.y, 5, 5);
                 }
